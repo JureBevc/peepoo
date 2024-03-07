@@ -1,0 +1,14 @@
+INTEGER
+regex:^[0-9]+$
+
+PLUS
++
+
+MINUS
+-
+
+MULTIPLY
+*
+
+DIVIDE
+/
