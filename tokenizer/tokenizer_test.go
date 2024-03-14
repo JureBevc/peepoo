@@ -10,9 +10,10 @@ import (
 func TestTokenizer(t *testing.T) {
 	fmt.Println(os.Getwd())
 	expected := []Token{
-		"INTEGER",
-		"PLUS",
-		"INTEGER",
+		"integer",
+		"plus",
+		"integer",
+		"seperator",
 	}
 
 	progList := []string{
@@ -25,9 +26,37 @@ func TestTokenizer(t *testing.T) {
 	tokenList := "../tests/tokens.list"
 
 	for _, progPath := range progList {
-		tokens := Tokenize(tokenList, progPath)
-		if !util.CompareSlices(tokens, expected) {
-			t.Errorf("Tokens not equal for tokens %s and program %s.\nActual:\n%s\nExpected:\n%s", tokenList, progPath, tokens, expected)
+		_, tokens := Tokenize(tokenList, progPath)
+		if !util.CompareSlices(*tokens, expected) {
+			t.Errorf("Tokens not equal for tokens %s and program %s.\nActual:\n%s\nExpected:\n%s", tokenList, progPath, *tokens, expected)
+		}
+	}
+
+}
+
+func TestTokenizerSeperator(t *testing.T) {
+	fmt.Println(os.Getwd())
+	expected := []Token{
+		"integer",
+		"plus",
+		"integer",
+		"seperator",
+		"integer",
+		"plus",
+		"integer",
+		"seperator",
+	}
+
+	progList := []string{
+		"../tests/p5.gpc",
+	}
+
+	tokenList := "../tests/tokens.list"
+
+	for _, progPath := range progList {
+		_, tokens := Tokenize(tokenList, progPath)
+		if !util.CompareSlices(*tokens, expected) {
+			t.Errorf("Tokens not equal for tokens %s and program %s.\nActual:\n%s\nExpected:\n%s", tokenList, progPath, *tokens, expected)
 		}
 	}
 
