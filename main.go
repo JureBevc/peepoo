@@ -35,8 +35,6 @@ func main() {
 	ptree := parser.Parse(tokenDefinitions, tokens, *grammarFile)
 	fmt.Printf("Parser finished: %s\n", time.Since(start))
 
-	parser.PrintTree(ptree, "")
-
 	fmt.Println("-Running assembler")
 	start = time.Now()
 	assembler.Assemble(ptree, *assemblerFile)
