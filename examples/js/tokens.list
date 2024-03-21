@@ -15,3 +15,12 @@ multiply
 
 divide
 /
+
+log
+log
+
+bopen
+(
+
+bclose
+)

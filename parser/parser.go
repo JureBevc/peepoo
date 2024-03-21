@@ -15,8 +15,22 @@ type GrammarSymbol struct {
 	IsTerminal bool
 }
 
+type ParseNode struct {
+	Name       string
+	Value      string
+	IsTerminal bool
+}
+
 // Map non-terminal name to list of rules (where every rule is a list of symbols)
 type GrammarRules map[string][][]GrammarSymbol
+
+func PrintTree(tree *util.TreeNode[ParseNode], prefix string) {
+	fmt.Printf("%s%s (%s)\n", prefix, fmt.Sprint(tree.Value.Value), tree.Value.Name)
+	childPrefix := prefix + "|"
+	for _, child := range (*tree).Children {
+		PrintTree(child, childPrefix)
+	}
+}
 
 func stringIsTerminal(name string, allTerminals *[]tokenizer.TokenDefinition) bool {
 	isTerminal := false
@@ -110,19 +124,23 @@ func loadGrammarFile(pathToGrammarFile string, allTerminals *[]tokenizer.TokenDe
 	return &grammar, firstSymbol
 }
 
-func naiveParseRecursive(programTokens *[]tokenizer.Token, grammar *GrammarRules, currentSymbol GrammarSymbol, startSymbol GrammarSymbol, tokenIndex int) (*util.TreeNode[string], int) {
+func naiveParseRecursive(programTokens *[]tokenizer.Token, grammar *GrammarRules, currentSymbol GrammarSymbol, startSymbol GrammarSymbol, tokenIndex int) (*util.TreeNode[ParseNode], int) {
 	// Terminals have no rules, return as leaf node
+	currentToken := (*programTokens)[tokenIndex]
 	if currentSymbol.IsTerminal {
-
-		if currentSymbol.Name != (*programTokens)[tokenIndex].Name {
+		if currentSymbol.Name != currentToken.Name {
 			// Terminal cannot match
 			return nil, tokenIndex
 		}
 
 		// Terminal can match
-		return &util.TreeNode[string]{
+		return &util.TreeNode[ParseNode]{
 			Children: nil,
-			Value:    currentSymbol.Name,
+			Value: ParseNode{
+				Name:       currentToken.Name,
+				Value:      currentToken.Value,
+				IsTerminal: true,
+			},
 		}, tokenIndex + 1
 	}
 
@@ -130,12 +148,12 @@ func naiveParseRecursive(programTokens *[]tokenizer.Token, grammar *GrammarRules
 	rules := (*grammar)[currentSymbol.Name]
 
 	for _, rule := range rules {
-		var children []*util.TreeNode[string]
+		var children []*util.TreeNode[ParseNode]
 
 		parsedAllChildren := true
 		childTokenIndex := tokenIndex
 		for _, childSymbol := range rule {
-			var childNode *util.TreeNode[string]
+			var childNode *util.TreeNode[ParseNode]
 			childNode, childTokenIndex = naiveParseRecursive(programTokens, grammar, childSymbol, startSymbol, childTokenIndex)
 			if childNode == nil {
 				// Could not create children, rule cannot apply
@@ -155,9 +173,13 @@ func naiveParseRecursive(programTokens *[]tokenizer.Token, grammar *GrammarRules
 
 		// Parsing children was a success, return result
 		if parsedAllChildren {
-			return &util.TreeNode[string]{
+			return &util.TreeNode[ParseNode]{
 				Children: children,
-				Value:    currentSymbol.Name,
+				Value: ParseNode{
+					Name:       currentSymbol.Name,
+					Value:      currentSymbol.Name,
+					IsTerminal: false,
+				},
 			}, childTokenIndex
 		}
 
@@ -166,18 +188,16 @@ func naiveParseRecursive(programTokens *[]tokenizer.Token, grammar *GrammarRules
 	return nil, tokenIndex
 }
 
-func naiveParse(programTokens *[]tokenizer.Token, grammar *GrammarRules, firstSymbol GrammarSymbol) *util.TreeNode[string] {
+func naiveParse(programTokens *[]tokenizer.Token, grammar *GrammarRules, firstSymbol GrammarSymbol) *util.TreeNode[ParseNode] {
 	tree, _ := naiveParseRecursive(programTokens, grammar, firstSymbol, firstSymbol, 0)
+	if tree == nil {
+		log.Panicln("Could not create parse tree")
+	}
 	return tree
 }
 
-func Parse(terminals *[]tokenizer.TokenDefinition, programTokens *[]tokenizer.Token, grammarFile string) *GrammarRules {
+func Parse(terminals *[]tokenizer.TokenDefinition, programTokens *[]tokenizer.Token, grammarFile string) *util.TreeNode[ParseNode] {
 	grammar, firstSymbol := loadGrammarFile(grammarFile, terminals)
 	parseTree := naiveParse(programTokens, grammar, firstSymbol)
-	if parseTree == nil {
-		fmt.Println(fmt.Errorf("could not create parse tree"))
-	} else {
-		util.PrintTree(parseTree, "-")
-	}
-	return grammar
+	return parseTree
 }

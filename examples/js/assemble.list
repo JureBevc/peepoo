@@ -1,0 +1,31 @@
+---
+PROGRAM
+EXPRESSION seperator
+$EXPRESSION$;
+
+---
+PROGRAM
+EXPRESSION seperator PROGRAM
+$EXPRESSION$;
+$PROGRAM$
+---
+MATH_P2
+MATH plus MATH
+$MATH$ + $MATH$
+---
+MATH_P2
+MATH minus MATH
+$MATH$ + $MATH$
+---
+MATH_P1
+MATH multiply MATH
+$MATH$ * $MATH$
+---
+MATH_P1
+MATH divide MATH
+$MATH$ / $MATH$
+---
+LOG
+log bopen MATH bclose
+console.log($MATH$)
+---

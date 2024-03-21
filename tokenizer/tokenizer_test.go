@@ -1,19 +1,32 @@
 package tokenizer
 
 import (
-	"JureBevc/gpc/util"
 	"fmt"
 	"os"
 	"testing"
 )
 
+func compareTokens(t1 *[]Token, t2 *[]Token) bool {
+	if len(*t1) != len(*t2) {
+		return false
+	}
+
+	for i := 0; i < len(*t1); i++ {
+		if (*t1)[i].Name != (*t2)[i].Name {
+			return false
+		}
+	}
+
+	return true
+}
+
 func TestTokenizer(t *testing.T) {
 	fmt.Println(os.Getwd())
 	expected := []Token{
-		"integer",
-		"plus",
-		"integer",
-		"seperator",
+		{Name: "integer"},
+		{Name: "plus"},
+		{Name: "integer"},
+		{Name: "seperator"},
 	}
 
 	progList := []string{
@@ -27,7 +40,7 @@ func TestTokenizer(t *testing.T) {
 
 	for _, progPath := range progList {
 		_, tokens := Tokenize(tokenList, progPath)
-		if !util.CompareSlices(*tokens, expected) {
+		if !compareTokens(tokens, &expected) {
 			t.Errorf("Tokens not equal for tokens %s and program %s.\nActual:\n%s\nExpected:\n%s", tokenList, progPath, *tokens, expected)
 		}
 	}
@@ -37,14 +50,14 @@ func TestTokenizer(t *testing.T) {
 func TestTokenizerSeperator(t *testing.T) {
 	fmt.Println(os.Getwd())
 	expected := []Token{
-		"integer",
-		"plus",
-		"integer",
-		"seperator",
-		"integer",
-		"plus",
-		"integer",
-		"seperator",
+		{Name: "integer"},
+		{Name: "plus"},
+		{Name: "integer"},
+		{Name: "seperator"},
+		{Name: "integer"},
+		{Name: "plus"},
+		{Name: "integer"},
+		{Name: "seperator"},
 	}
 
 	progList := []string{
@@ -55,7 +68,7 @@ func TestTokenizerSeperator(t *testing.T) {
 
 	for _, progPath := range progList {
 		_, tokens := Tokenize(tokenList, progPath)
-		if !util.CompareSlices(*tokens, expected) {
+		if !compareTokens(tokens, &expected) {
 			t.Errorf("Tokens not equal for tokens %s and program %s.\nActual:\n%s\nExpected:\n%s", tokenList, progPath, *tokens, expected)
 		}
 	}
