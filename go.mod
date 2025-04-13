@@ -1,3 +1,3 @@
-module JureBevc/gpc
+module JureBevc/poopoo
 
 go 1.22.0

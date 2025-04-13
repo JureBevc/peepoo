@@ -30,10 +30,10 @@ func TestTokenizer(t *testing.T) {
 	}
 
 	progList := []string{
-		"../tests/p1.gpc",
-		"../tests/p2.gpc",
-		"../tests/p3.gpc",
-		"../tests/p4.gpc",
+		"../tests/p1.poopoo",
+		"../tests/p2.poopoo",
+		"../tests/p3.poopoo",
+		"../tests/p4.poopoo",
 	}
 
 	tokenList := "../tests/tokens.list"
@@ -61,7 +61,7 @@ func TestTokenizerSeperator(t *testing.T) {
 	}
 
 	progList := []string{
-		"../tests/p5.gpc",
+		"../tests/p5.poopoo",
 	}
 
 	tokenList := "../tests/tokens.list"

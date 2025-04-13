@@ -1,44 +1,63 @@
 package main
 
 import (
-	"JureBevc/gpc/assembler"
-	"JureBevc/gpc/parser"
-	"JureBevc/gpc/tokenizer"
+	"JureBevc/poopoo/parser"
+	"JureBevc/poopoo/runtime"
+	"JureBevc/poopoo/tokenizer"
+	"JureBevc/poopoo/util"
+	"embed"
 	"flag"
 	"fmt"
-	"path/filepath"
+	"log"
+	"os"
 	"time"
 )
 
-func main() {
-	rootConfigPath := flag.String("config", ".", "Path to root of config files")
-	inputFile := flag.String("file", "prog.gpc", "Path to the input file")
-	tokensFile := flag.String("tokens", "tokens.list", "Path to token definition file")
-	grammarFile := flag.String("grammar", "grammar.list", "Path to grammar definition file")
-	assemblerFile := flag.String("assemble", "assemble.list", "Path to assembler definition file")
-	flag.Parse()
+//go:embed config/tokens.list
+var tokenFile embed.FS
 
-	*inputFile = filepath.Join(*rootConfigPath, *inputFile)
-	*tokensFile = filepath.Join(*rootConfigPath, *tokensFile)
-	*grammarFile = filepath.Join(*rootConfigPath, *grammarFile)
-	*assemblerFile = filepath.Join(*rootConfigPath, *assemblerFile)
+//go:embed config/grammar.list
+var grammarFile embed.FS
+
+func main() {
+	// Parse flags
+	verbose := flag.Int("verbose", 0, "Enable verbose mode")
+	flag.Parse()
+	util.LogLevel = *verbose
+
+	// Get positional argument (first non-flag argument)
+	var inputFile string = ""
+	args := flag.Args()
+	if len(args) > 0 {
+		inputFile = args[0]
+	}
+
+	if inputFile == "" {
+		log.Fatalln("Failed to open program file, no file provided.")
+	}
+
+	if _, err := os.Stat(inputFile); err != nil {
+		log.Fatalf("Failed to open program file %s\n.", inputFile)
+	}
 
 	totalStart := time.Now()
 
-	fmt.Println("-Running tokenizer")
+	util.Log(1, "-Running tokenizer")
 	start := time.Now()
-	tokenDefinitions, tokens := tokenizer.Tokenize(*tokensFile, *inputFile)
-	fmt.Printf("Tokenizer finished: %s\n", time.Since(start))
+	tokenDefinitions, tokens := tokenizer.Tokenize(tokenFile, inputFile)
+	util.Log(1, fmt.Sprintf("Tokenizer finished: %s\n", time.Since(start)))
 
-	fmt.Println("-Running parser")
+	util.Log(3, fmt.Sprintln(tokens))
+
+	util.Log(1, fmt.Sprintln("-Running parser"))
 	start = time.Now()
-	ptree := parser.Parse(tokenDefinitions, tokens, *grammarFile)
-	fmt.Printf("Parser finished: %s\n", time.Since(start))
+	ptree := parser.Parse(tokenDefinitions, tokens, grammarFile)
+	util.Log(1, fmt.Sprintf("Parser finished: %s\n", time.Since(start)))
 
-	fmt.Println("-Running assembler")
-	start = time.Now()
-	assembler.Assemble(ptree, *assemblerFile)
-	fmt.Printf("Assembler finished: %s\n", time.Since(start))
+	util.Log(1, fmt.Sprintf("-Done: %s\n", time.Since(totalStart)))
 
-	fmt.Printf("-Done: %s\n", time.Since(totalStart))
+	if util.LogLevel > 3 {
+		parser.PrintTree(ptree, "")
+	}
+	runtime.RunTree(ptree)
 }

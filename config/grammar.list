@@ -1,0 +1,34 @@
+PROGRAM
+EXPRESSION
+EXPRESSION PROGRAM
+
+EXPRESSION
+ASSIGN
+PRINT
+PRINTLN
+
+VALUE
+binary
+var
+binary
+var
+
+MATH
+VALUE OP_MATH
+VALUE
+
+OP_MATH
+multiply MATH
+divide MATH
+plus MATH
+minus MATH
+
+
+ASSIGN
+var set MATH
+
+PRINT
+print MATH
+
+PRINTLN
+println MATH

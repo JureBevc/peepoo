@@ -2,6 +2,8 @@ package tokenizer
 
 import (
 	"bufio"
+	"bytes"
+	"embed"
 	"fmt"
 	"log"
 	"os"
@@ -22,18 +24,15 @@ type Token struct {
 	Value string
 }
 
-func loadTokenFile(pathToTokenFile string) *[]TokenDefinition {
-	file, err := os.Open(pathToTokenFile)
+func loadTokenFile(pathToTokenFile embed.FS) *[]TokenDefinition {
+	file, err := pathToTokenFile.ReadFile("config/tokens.list")
 	if err != nil {
-		log.Fatalf("Unable to open token file with path %s\n%s\n", pathToTokenFile, err)
+		log.Fatalf("Unable to open token file with path %v\n%s\n", pathToTokenFile, err)
 		return nil
 	}
-
-	defer file.Close()
-
 	var tokens []TokenDefinition
 
-	scanner := bufio.NewScanner(file)
+	scanner := bufio.NewScanner(bytes.NewReader(file))
 	currentDefinition := TokenDefinition{}
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -131,7 +130,7 @@ func parseFile(tokenDefinitons *[]TokenDefinition, pathToInputFile string) *[]To
 
 		if currentDefError == nil && nextDefError != nil {
 			// Current word is a token, next word is not, create a split
-			parseCurrentWord = true
+			// parseCurrentWord = true
 		}
 
 		if reachedEnd && currentWord != "" {
@@ -166,7 +165,7 @@ func parseFile(tokenDefinitons *[]TokenDefinition, pathToInputFile string) *[]To
 	return &tokens
 }
 
-func Tokenize(pathToTokenFile string, pathToInputFile string) (*[]TokenDefinition, *[]Token) {
+func Tokenize(pathToTokenFile embed.FS, pathToInputFile string) (*[]TokenDefinition, *[]Token) {
 	tokenDef := loadTokenFile(pathToTokenFile)
 	tokens := parseFile(tokenDef, pathToInputFile)
 	return tokenDef, tokens

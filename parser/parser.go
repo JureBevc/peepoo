@@ -1,12 +1,13 @@
 package parser
 
 import (
-	"JureBevc/gpc/tokenizer"
-	"JureBevc/gpc/util"
+	"JureBevc/poopoo/tokenizer"
+	"JureBevc/poopoo/util"
 	"bufio"
+	"bytes"
+	"embed"
 	"fmt"
 	"log"
-	"os"
 	"strings"
 )
 
@@ -44,18 +45,16 @@ func stringIsTerminal(name string, allTerminals *[]tokenizer.TokenDefinition) bo
 	return isTerminal
 }
 
-func loadGrammarFile(pathToGrammarFile string, allTerminals *[]tokenizer.TokenDefinition) (*GrammarRules, GrammarSymbol) {
-	file, err := os.Open(pathToGrammarFile)
+func loadGrammarFile(pathToGrammarFile embed.FS, allTerminals *[]tokenizer.TokenDefinition) (*GrammarRules, GrammarSymbol) {
+	file, err := pathToGrammarFile.ReadFile("config/grammar.list")
 	if err != nil {
-		log.Fatalf("Unable to open grammar file with path %s\n%s\n", pathToGrammarFile, err)
+		log.Fatalf("Unable to open grammar file with path %v\n%s\n", pathToGrammarFile, err)
 		return nil, GrammarSymbol{}
 	}
 
-	defer file.Close()
-
 	grammar := GrammarRules{}
 	firstSymbol := GrammarSymbol{}
-	scanner := bufio.NewScanner(file)
+	scanner := bufio.NewScanner(bytes.NewReader(file))
 	currentNonTerminal := ""
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -126,6 +125,10 @@ func loadGrammarFile(pathToGrammarFile string, allTerminals *[]tokenizer.TokenDe
 
 func naiveParseRecursive(programTokens *[]tokenizer.Token, grammar *GrammarRules, currentSymbol GrammarSymbol, startSymbol GrammarSymbol, tokenIndex int) (*util.TreeNode[ParseNode], int) {
 	// Terminals have no rules, return as leaf node
+	if tokenIndex >= len(*programTokens) {
+		return nil, tokenIndex
+	}
+
 	currentToken := (*programTokens)[tokenIndex]
 	if currentSymbol.IsTerminal {
 		if currentSymbol.Name != currentToken.Name {
@@ -146,10 +149,8 @@ func naiveParseRecursive(programTokens *[]tokenizer.Token, grammar *GrammarRules
 
 	// Loop non-terminal rules and try to parse each one
 	rules := (*grammar)[currentSymbol.Name]
-
 	for _, rule := range rules {
 		var children []*util.TreeNode[ParseNode]
-
 		parsedAllChildren := true
 		childTokenIndex := tokenIndex
 		for _, childSymbol := range rule {
@@ -196,7 +197,7 @@ func naiveParse(programTokens *[]tokenizer.Token, grammar *GrammarRules, firstSy
 	return tree
 }
 
-func Parse(terminals *[]tokenizer.TokenDefinition, programTokens *[]tokenizer.Token, grammarFile string) *util.TreeNode[ParseNode] {
+func Parse(terminals *[]tokenizer.TokenDefinition, programTokens *[]tokenizer.Token, grammarFile embed.FS) *util.TreeNode[ParseNode] {
 	grammar, firstSymbol := loadGrammarFile(grammarFile, terminals)
 	parseTree := naiveParse(programTokens, grammar, firstSymbol)
 	return parseTree
