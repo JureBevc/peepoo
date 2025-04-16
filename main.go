@@ -1,10 +1,10 @@
 package main
 
 import (
-	"JureBevc/poopoo/parser"
-	"JureBevc/poopoo/runtime"
-	"JureBevc/poopoo/tokenizer"
-	"JureBevc/poopoo/util"
+	"JureBevc/peepoo/parser"
+	"JureBevc/peepoo/runtime"
+	"JureBevc/peepoo/tokenizer"
+	"JureBevc/peepoo/util"
 	"embed"
 	"flag"
 	"fmt"

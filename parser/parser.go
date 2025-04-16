@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"JureBevc/poopoo/tokenizer"
-	"JureBevc/poopoo/util"
+	"JureBevc/peepoo/tokenizer"
+	"JureBevc/peepoo/util"
 	"bufio"
 	"bytes"
 	"embed"

@@ -1,8 +1,8 @@
 package runtime
 
 import (
-	"JureBevc/poopoo/parser"
-	"JureBevc/poopoo/util"
+	"JureBevc/peepoo/parser"
+	"JureBevc/peepoo/util"
 	"fmt"
 	"log"
 	"strconv"
