@@ -109,6 +109,42 @@ func RunMath(node *util.TreeNode[parser.ParseNode], scope *Scope) interface{} {
 	return nil
 }
 
+func RunIf(node *util.TreeNode[parser.ParseNode], scope *Scope) {
+	mathNode := node.Children[1]
+	mathValue := RunMath(mathNode, scope).(int64)
+	if mathValue != 0 {
+		bodyNode := node.Children[2]
+
+		// body node has 1 child when its ifend
+		for len(bodyNode.Children) > 1 {
+			RunExpression(bodyNode.Children[0], scope)
+			bodyNode = bodyNode.Children[1]
+		}
+
+	}
+}
+
+func RunLoop(node *util.TreeNode[parser.ParseNode], scope *Scope) {
+
+	varNode := node.Children[1]
+	variableName := varNode.Value.Value
+
+	mathValueStart := RunMath(node.Children[2], scope).(int64)
+	mathValueStop := RunMath(node.Children[3], scope).(int64)
+	currentValue := mathValueStart
+	for currentValue < mathValueStop {
+		(*scope)[variableName] = currentValue
+		bodyNode := node.Children[4]
+
+		// body node has 1 child when its ifend
+		for len(bodyNode.Children) > 1 {
+			RunExpression(bodyNode.Children[0], scope)
+			bodyNode = bodyNode.Children[1]
+		}
+		currentValue += 1
+	}
+}
+
 func RunPrint(node *util.TreeNode[parser.ParseNode], scope *Scope) {
 	result := RunMath(node.Children[1], scope)
 	fmt.Print(result)
@@ -128,6 +164,10 @@ func RunExpression(node *util.TreeNode[parser.ParseNode], scope *Scope) {
 			RunPrint(childNode, scope)
 		case "PRINTLN":
 			RunPrintln(childNode, scope)
+		case "IF":
+			RunIf(childNode, scope)
+		case "LOOP":
+			RunLoop(childNode, scope)
 		}
 	}
 }

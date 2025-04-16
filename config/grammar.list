@@ -3,13 +3,13 @@ EXPRESSION
 EXPRESSION PROGRAM
 
 EXPRESSION
+LOOP
+IF
 ASSIGN
 PRINT
 PRINTLN
 
 VALUE
-binary
-var
 binary
 var
 
@@ -23,7 +23,6 @@ divide MATH
 plus MATH
 minus MATH
 
-
 ASSIGN
 var set MATH
 
@@ -32,3 +31,17 @@ print MATH
 
 PRINTLN
 println MATH
+
+IF
+ifstart MATH IFBODY
+
+IFBODY
+EXPRESSION IFBODY
+ifend
+
+LOOP
+loopstart var MATH MATH LOOPBODY
+
+LOOPBODY
+EXPRESSION LOOPBODY
+loopend
