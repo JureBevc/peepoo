@@ -1,14 +1,31 @@
-# 💩 Peepee peepoo Language
+# 💩 Peepee poopoo Language
 
 The most sophisticated, vowel-based, programming language ever conceived.
 
 > A language consisting strictly of the letter p separated by vowels. Yes, even variable names. You're welcome.
+## Content
+
+- [What Is This?](#🚽-what-is-this)
+- [Quick Guide](#quick-guide)
+    - [Syntax Rules](#📝-syntax-rules)
+        - [Assigning Variables](#📦-assigning-variables)
+        - [Operators](#➕-operators)
+        - [Printing](#📤-printing)
+        - [Conditionals](#❗-conditionals)
+        - [Loops](#🔁-loops)
+        - [Functions](#🧙‍♂️-functions)
+    - [Short Examples](#🧠-short-examples)
+    - [Longer Examples](#🧠🧠-longer-examples)
+    - [Run/Build from source](#🏃-runbuild-from-source)
+
 
 
 ## 🚽 What Is This?
 
 Peepee peepoo Language is an interpreted language made entirely from the letter `p` and a few brave vowels. Everything — variables, values, keywords — follows the sacred `p + vowel + p + vowel...` pattern.
 
+
+# Quick Guide
 
 ## 📝 Syntax Rules
 
@@ -23,7 +40,7 @@ Peepee peepoo Language is an interpreted language made entirely from the letter 
     - `pipopo` → `100` → decimal `4`
 
 
-## 📦 Assigning Variables
+### 📦 Assigning Variables
 
 ```
 PEE pe pipo
@@ -32,7 +49,7 @@ PEE pe pipo
 `PEE` is now 2.
 
 
-## ➕ Operators
+### ➕ Operators
 
 Math is expressed with unique operator keywords:
 
@@ -51,7 +68,7 @@ PEE pe pi pu pipo
 Stores `1 + 2` into `PEE`.
 
 
-## 📤 Printing
+### 📤 Printing
 
 Use `paa` to print without newline, `paapa` to print with newline.
 
@@ -59,7 +76,7 @@ Use `paa` to print without newline, `paapa` to print with newline.
 paapa PEE
 ```
 
-## ❗ Conditionals
+### ❗ Conditionals
 
 Use `pii` to start an `if` block and `piipii` to close it. Block runs only if condition ≠ 0.
 
@@ -71,7 +88,7 @@ piipii
 
 Prints `2` because `pipo` is 2.
 
-## 🔁 Loops
+### 🔁 Loops
 
 Use `pepo` to start a loop and `pope` to end it. The loop variable auto-increments from 0 to the upper bound (exclusive).
 
@@ -84,7 +101,7 @@ pope
 Prints `0` to `3`.
 
 
-## 🧙‍♂️ Functions
+### 🧙‍♂️ Functions
 
 Define a function with `poo`, end with `poopoo`. First word is the function name, everything that follows is a parameter.
 

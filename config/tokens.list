@@ -7,6 +7,9 @@ pe
 binary
 regex:^(p(i|o))+$
 
+char
+regex:^p(a|e|i|o|u)p(a|e|i|o|u)p(a|e|i|o|u)p(a|e|i|o|u)$
+
 print
 paa
 

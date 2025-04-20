@@ -104,6 +104,7 @@ func parseFile(tokenDefinitons *[]TokenDefinition, pathToInputFile string) *[]To
 	reader := bufio.NewReader(file)
 
 	currentWord := ""
+	inComment := false
 	for {
 		char, _, err := reader.ReadRune()
 		reachedEnd := false
@@ -112,8 +113,14 @@ func parseFile(tokenDefinitons *[]TokenDefinition, pathToInputFile string) *[]To
 			reachedEnd = true
 		}
 
+		if char == '#' {
+			inComment = true
+		}
+		if char == '\n' {
+			inComment = false
+		}
 		// Create next word if current char is not empty
-		emptyChar := unicode.IsSpace(char)
+		emptyChar := unicode.IsSpace(char) || inComment
 		nextWord := currentWord
 		if !reachedEnd && !emptyChar {
 			nextWord = currentWord + string(char)
