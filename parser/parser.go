@@ -22,6 +22,28 @@ type ParseNode struct {
 	IsTerminal bool
 }
 
+func CopyTree(node *util.TreeNode[ParseNode]) *util.TreeNode[ParseNode] {
+	if len((*node).Children) == 0 {
+		newNode := util.TreeNode[ParseNode]{
+			Children: nil,
+			Value:    node.Value,
+		}
+		return &newNode
+	}
+
+	newChildren := []*util.TreeNode[ParseNode]{}
+
+	for _, cn := range (*node).Children {
+		newChildren = append(newChildren, CopyTree(cn))
+	}
+
+	newNode := util.TreeNode[ParseNode]{
+		Children: newChildren,
+		Value:    node.Value,
+	}
+	return &newNode
+}
+
 // Map non-terminal name to list of rules (where every rule is a list of symbols)
 type GrammarRules map[string][][]GrammarSymbol
 

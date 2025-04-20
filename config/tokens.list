@@ -36,3 +36,15 @@ pii
 
 ifend
 piipii
+
+funcstart
+poo
+
+funcend
+poopoo
+
+return
+peepee
+
+funccall
+pee
