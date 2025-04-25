@@ -5,6 +5,7 @@ import (
 	"JureBevc/peepoo/util"
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -29,11 +30,81 @@ func ScopeIsReturning(scope *Scope) bool {
 	return false
 }
 
+func EncodeString(s string) string {
+	var base5Map = []string{"pa", "pe", "pi", "po", "pu"}
+	var builder strings.Builder
+	for i, c := range []byte(s) {
+		val := int(c)
+		var digits [4]int
+
+		// Convert to base 5, right-aligned to 4 digits
+		for j := 3; j >= 0; j-- {
+			digits[j] = val % 5
+			val /= 5
+		}
+
+		for _, d := range digits {
+			builder.WriteString(base5Map[d])
+		}
+
+		if i < len(s)-1 {
+			builder.WriteByte(' ')
+		}
+	}
+
+	return builder.String()
+}
+
+func DecodeString(encoded string) string {
+	revMap := map[string]int{
+		"pa": 0, "pe": 1, "pi": 2, "po": 3, "pu": 4,
+	}
+
+	words := strings.Split(encoded, " ")
+	var result strings.Builder
+
+	for _, word := range words {
+		if len(word) != 8 {
+			continue // skip invalid chunks
+		}
+
+		val := 0
+		for i := 0; i < 8; i += 2 {
+			symbol := word[i : i+2]
+			digit, ok := revMap[symbol]
+			if !ok {
+				continue // skip invalid symbols
+			}
+			val = val*5 + digit
+		}
+
+		result.WriteByte(byte(val))
+	}
+
+	return result.String()
+}
+
 func RunAssign(node *util.TreeNode[parser.ParseNode], scope *Scope) {
-	variableName := node.Children[0].Value.Value
-	valueNode := node.Children[2]
-	result := RunMath(valueNode, scope)
-	(*scope)[variableName] = result
+	switch node.Children[0].Value.Name {
+	case "var":
+		variableName := node.Children[0].Value.Value
+		valueNode := node.Children[2]
+		result := RunMath(valueNode, scope)
+		(*scope)[variableName] = result
+	case "LISTACCESS":
+		variableName := node.Children[0].Value.Value
+		valueNode := node.Children[2]
+		result := RunMath(valueNode, scope)
+
+		accessNode := node.Children[0]
+		if varValue, ok := (*scope)[accessNode.Children[0].Value.Value]; ok {
+			varList := varValue.([]interface{})
+			indexValue := RunValue(accessNode.Children[2], scope).(int64)
+			varList[indexValue] = result
+			(*scope)[variableName] = varList
+		}
+	}
+
 }
 
 func RunValue(node *util.TreeNode[parser.ParseNode], scope *Scope) interface{} {
@@ -54,11 +125,50 @@ func RunValue(node *util.TreeNode[parser.ParseNode], scope *Scope) interface{} {
 				log.Fatalf("Failed to parse binary number from %s\n", firstChild.Value.Value)
 			}
 			return val
+		case "char":
+			return DecodeString(firstChild.Value.Value)
+		case "FUNCCALL":
+			return RunFuncCall(firstChild, scope)
+		case "LIST":
+			return ParseList(firstChild, scope)
+		case "LISTACCESS":
+			if varValue, ok := (*scope)[firstChild.Children[0].Value.Value]; ok {
+				varList := varValue.([]interface{})
+				indexValue := RunValue(firstChild.Children[2], scope).(int64)
+				return varList[indexValue]
+			}
+			log.Fatalf("Failed to access list %s\n", firstChild.Value.Value)
+		case "LISTPOP":
+			return RunListPop(firstChild, scope)
+		case "LISTLEN":
+			if varValue, ok := (*scope)[firstChild.Children[1].Value.Value]; ok {
+				varList := varValue.([]interface{})
+				return len(varList)
+			}
 		}
+
+		log.Fatalf("Failed to parse value %v\n", firstChild)
+		return nil
 	}
 
 	log.Fatalf("Failed to parse value %v\n", node)
 	return nil
+}
+
+func ParseList(node *util.TreeNode[parser.ParseNode], scope *Scope) []interface{} {
+	ret := []interface{}{}
+
+	listElement := node.Children[1]
+	for listElement.Value.Name == "LISTELEMENT" {
+		if len(listElement.Children) > 1 {
+			ret = append(ret, RunValue(listElement.Children[0], scope))
+			listElement = listElement.Children[1]
+		} else {
+			listElement = listElement.Children[0]
+		}
+	}
+
+	return ret
 }
 
 func RunMath(node *util.TreeNode[parser.ParseNode], scope *Scope) interface{} {
@@ -77,7 +187,11 @@ func RunMath(node *util.TreeNode[parser.ParseNode], scope *Scope) interface{} {
 	if len(node.Children) == 2 {
 		if node.Children[0].Value.Name == "VALUE" &&
 			node.Children[1].Value.Name == "OP_MATH" {
-			leftValue := RunValue(node.Children[0], scope).(int64)
+			leftValue, ok := RunValue(node.Children[0], scope).(int64)
+			if !ok {
+				fmt.Printf("Invalid type error. Ln %d Col %d.\n", node.Children[0].Value.Token.Line, node.Children[0].Value.Token.Column)
+				os.Exit(1)
+			}
 
 			operator := node.Children[1].Children[0].Value.Name
 			rightMathNode := node.Children[1].Children[1]
@@ -233,6 +347,31 @@ func RunPrintln(node *util.TreeNode[parser.ParseNode], scope *Scope) {
 	fmt.Println(result)
 }
 
+func RunListAppend(node *util.TreeNode[parser.ParseNode], scope *Scope) {
+	if varValue, ok := (*scope)[node.Children[0].Value.Value]; ok {
+		varList := varValue.([]interface{})
+		newValue := RunValue(node.Children[2], scope)
+		(*scope)[node.Children[0].Value.Value] = append(varList, newValue)
+	} else {
+		log.Fatalf("Invalid list variable %s\n", node.Children[0].Value.Value)
+	}
+}
+
+func RunListPop(node *util.TreeNode[parser.ParseNode], scope *Scope) interface{} {
+	if varValue, ok := (*scope)[node.Children[0].Value.Value]; ok {
+		varList := varValue.([]interface{})
+		indexValue := RunValue(node.Children[2], scope).(int64)
+		returnValue := varList[indexValue]
+
+		varList = append(varList[:indexValue], varList[indexValue+1:]...)
+		(*scope)[node.Children[0].Value.Value] = varList
+
+		return returnValue
+	}
+	log.Fatalf("Failed to pop list %v\n", node.Value.Value)
+	return nil
+}
+
 func RunExpression(node *util.TreeNode[parser.ParseNode], scope *Scope) {
 	for _, childNode := range node.Children {
 		switch childNode.Value.Name {
@@ -252,6 +391,10 @@ func RunExpression(node *util.TreeNode[parser.ParseNode], scope *Scope) {
 			RunReturn(childNode, scope)
 		case "FUNCCALL":
 			RunFuncCall(childNode, scope)
+		case "LISTAPPEND":
+			RunListAppend(childNode, scope)
+		case "LISTPOP":
+			RunListPop(childNode, scope)
 		}
 	}
 }

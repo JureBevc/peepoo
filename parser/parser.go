@@ -20,6 +20,7 @@ type ParseNode struct {
 	Name       string
 	Value      string
 	IsTerminal bool
+	Token      *tokenizer.Token
 }
 
 func CopyTree(node *util.TreeNode[ParseNode]) *util.TreeNode[ParseNode] {
@@ -165,6 +166,7 @@ func naiveParseRecursive(programTokens *[]tokenizer.Token, grammar *GrammarRules
 				Name:       currentToken.Name,
 				Value:      currentToken.Value,
 				IsTerminal: true,
+				Token:      &currentToken,
 			},
 		}, tokenIndex + 1
 	}
@@ -202,6 +204,7 @@ func naiveParseRecursive(programTokens *[]tokenizer.Token, grammar *GrammarRules
 					Name:       currentSymbol.Name,
 					Value:      currentSymbol.Name,
 					IsTerminal: false,
+					Token:      &currentToken,
 				},
 			}, childTokenIndex
 		}

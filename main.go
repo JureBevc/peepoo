@@ -22,6 +22,8 @@ var grammarFile embed.FS
 func main() {
 	// Parse flags
 	verbose := flag.Int("verbose", 0, "Enable verbose mode")
+	encodeString := flag.Bool("encode", false, "Encode string")
+	decodeString := flag.Bool("decode", false, "Decode string")
 	flag.Parse()
 	util.LogLevel = *verbose
 
@@ -30,6 +32,24 @@ func main() {
 	args := flag.Args()
 	if len(args) > 0 {
 		inputFile = args[0]
+	}
+
+	if *encodeString {
+		if len(args) > 0 {
+			inputString := args[0]
+			encoded := runtime.EncodeString(inputString)
+			fmt.Println(encoded)
+		}
+		return
+	}
+
+	if *decodeString {
+		if len(args) > 0 {
+			inputString := args[0]
+			decoded := runtime.DecodeString(inputString)
+			fmt.Println(decoded)
+		}
+		return
 	}
 
 	if inputFile == "" {

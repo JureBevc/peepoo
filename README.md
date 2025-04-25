@@ -16,7 +16,7 @@ The most sophisticated, vowel-based, programming language ever conceived.
         - [Functions](#🧙‍♂️-functions)
     - [Short Examples](#🧠-short-examples)
     - [Longer Examples](#🧠🧠-longer-examples)
-    - [Run/Build from source](#🏃-runbuild-from-source)
+    - [Run and Build](#🏃-run-and-build)
 
 
 
@@ -146,15 +146,29 @@ Outputs: `0149`
 
 [Fibonacci example](./examples/fibonacci.poopoo)
 
-## 🏃 Run/Build from source
+## 🏃 Run and Build
 
 Run without compiling:
 ```
 go run . input.peepoo
 ```
 
-Compile and run:
+Compile and run program:
 ```
 go build -o peepoo main.go
 ./peepoo input.peepoo
+```
+
+Encode string:
+```
+./peepoo -encode "Hello world!"
+
+papipupi papupape papupepo papupepo papupipe papepepi papupopu papupipe papupipu papupepo papupapa papepepo
+```
+
+Decode string:
+```
+./peepoo -encode "papipupi papupape papupepo papupepo papupipe papepepi papupopu papupipe papupipu papupepo papupapa papepepo"
+
+Hello world!
 ```

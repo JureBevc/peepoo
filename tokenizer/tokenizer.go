@@ -20,8 +20,10 @@ type TokenDefinition struct {
 }
 
 type Token struct {
-	Name  string
-	Value string
+	Name   string
+	Value  string
+	Line   int
+	Column int
 }
 
 func loadTokenFile(pathToTokenFile embed.FS) *[]TokenDefinition {
@@ -103,10 +105,21 @@ func parseFile(tokenDefinitons *[]TokenDefinition, pathToInputFile string) *[]To
 
 	reader := bufio.NewReader(file)
 
+	line := 1
+	column := 1
+
 	currentWord := ""
 	inComment := false
 	for {
 		char, _, err := reader.ReadRune()
+
+		if char == '\n' {
+			line++
+			column = 0
+		} else {
+			column++
+		}
+
 		reachedEnd := false
 		// Check for end of file
 		if err != nil {
@@ -150,8 +163,10 @@ func parseFile(tokenDefinitons *[]TokenDefinition, pathToInputFile string) *[]To
 				log.Fatalf("Unable to parse token word %s\n", currentWord)
 			}
 			tokens = append(tokens, Token{
-				Name:  currentDefinition.Name,
-				Value: currentWord,
+				Name:   currentDefinition.Name,
+				Value:  currentWord,
+				Line:   line,
+				Column: column,
 			})
 		}
 
