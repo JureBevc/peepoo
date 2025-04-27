@@ -3,6 +3,7 @@ package runtime
 import (
 	"JureBevc/peepoo/parser"
 	"JureBevc/peepoo/util"
+	"bufio"
 	"fmt"
 	"log"
 	"os"
@@ -145,6 +146,32 @@ func RunValue(node *util.TreeNode[parser.ParseNode], scope *Scope) interface{} {
 				varList := varValue.([]interface{})
 				return len(varList)
 			}
+		case "readinput":
+			reader := bufio.NewReader(os.Stdin)
+			data, _ := reader.ReadString('\n')
+			data = strings.TrimSpace(data)
+			var chars []string
+			for _, r := range data {
+				chars = append(chars, string(r))
+			}
+			return chars
+		case "readfile":
+			if varValue, ok := (*scope)[node.Children[1].Value.Value]; ok {
+				listValue := varValue.([]interface{})
+				varString := ""
+				for _, val := range listValue {
+					varString = varString + val.(string)
+				}
+				data, _ := os.ReadFile(varString)
+				outString := string(data)
+				var chars []string
+				for _, r := range outString {
+					chars = append(chars, string(r))
+				}
+
+				return chars
+			}
+			log.Fatalf("Failed to read file %s\n", firstChild.Children[1].Value.Value)
 		}
 
 		log.Fatalf("Failed to parse value %v\n", firstChild)

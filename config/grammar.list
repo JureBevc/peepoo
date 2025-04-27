@@ -20,6 +20,8 @@ LISTPOP
 LISTLEN
 LIST
 FUNCCALL
+readfile var
+readinput
 char
 binary
 var
