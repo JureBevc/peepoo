@@ -1,6 +1,7 @@
 package tokenizer
 
 import (
+	"JureBevc/peepoo/util"
 	"bufio"
 	"bytes"
 	"embed"
@@ -113,13 +114,6 @@ func parseFile(tokenDefinitons *[]TokenDefinition, pathToInputFile string) *[]To
 	for {
 		char, _, err := reader.ReadRune()
 
-		if char == '\n' {
-			line++
-			column = 0
-		} else {
-			column++
-		}
-
 		reachedEnd := false
 		// Check for end of file
 		if err != nil {
@@ -160,7 +154,7 @@ func parseFile(tokenDefinitons *[]TokenDefinition, pathToInputFile string) *[]To
 
 		if parseCurrentWord {
 			if currentDefError != nil {
-				log.Fatalf("Unable to parse token word %s\n", currentWord)
+				util.FatalError(fmt.Sprintf("Unknown token %s", currentWord), line, column)
 			}
 			tokens = append(tokens, Token{
 				Name:   currentDefinition.Name,
@@ -168,6 +162,13 @@ func parseFile(tokenDefinitons *[]TokenDefinition, pathToInputFile string) *[]To
 				Line:   line,
 				Column: column,
 			})
+		}
+
+		if char == '\n' {
+			line++
+			column = 0
+		} else {
+			column++
 		}
 
 		if reachedEnd {

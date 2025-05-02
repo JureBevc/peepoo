@@ -46,7 +46,7 @@ func main() {
 	if *decodeString {
 		if len(args) > 0 {
 			inputString := args[0]
-			decoded := runtime.DecodeString(inputString)
+			decoded, _ := runtime.DecodeString(inputString)
 			fmt.Println(decoded)
 		}
 		return

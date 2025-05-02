@@ -23,6 +23,9 @@ type ParseNode struct {
 	Token      *tokenizer.Token
 }
 
+var MaxLine int = 0
+var MaxColumn int = 0
+
 func CopyTree(node *util.TreeNode[ParseNode]) *util.TreeNode[ParseNode] {
 	if len((*node).Children) == 0 {
 		newNode := util.TreeNode[ParseNode]{
@@ -146,6 +149,15 @@ func loadGrammarFile(pathToGrammarFile embed.FS, allTerminals *[]tokenizer.Token
 	return &grammar, firstSymbol
 }
 
+func updateMaxLineAndColumn(line int, column int) {
+	if line > MaxLine {
+		MaxLine = line
+		MaxColumn = column
+	} else if line == MaxLine && column > MaxColumn {
+		MaxColumn = column
+	}
+}
+
 func naiveParseRecursive(programTokens *[]tokenizer.Token, grammar *GrammarRules, currentSymbol GrammarSymbol, startSymbol GrammarSymbol, tokenIndex int) (*util.TreeNode[ParseNode], int) {
 	// Terminals have no rules, return as leaf node
 	if tokenIndex >= len(*programTokens) {
@@ -159,6 +171,7 @@ func naiveParseRecursive(programTokens *[]tokenizer.Token, grammar *GrammarRules
 			return nil, tokenIndex
 		}
 
+		updateMaxLineAndColumn(currentToken.Line, currentToken.Column)
 		// Terminal can match
 		return &util.TreeNode[ParseNode]{
 			Children: nil,
@@ -217,7 +230,7 @@ func naiveParseRecursive(programTokens *[]tokenizer.Token, grammar *GrammarRules
 func naiveParse(programTokens *[]tokenizer.Token, grammar *GrammarRules, firstSymbol GrammarSymbol) *util.TreeNode[ParseNode] {
 	tree, _ := naiveParseRecursive(programTokens, grammar, firstSymbol, firstSymbol, 0)
 	if tree == nil {
-		log.Panicln("Could not create parse tree")
+		util.FatalError("Failed to parse expression", MaxLine, MaxColumn)
 	}
 	return tree
 }

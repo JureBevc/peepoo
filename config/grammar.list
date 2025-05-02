@@ -22,6 +22,8 @@ LIST
 FUNCCALL
 readfile var
 readinput
+chartoint var
+chartoint char
 char
 binary
 var
