@@ -13,7 +13,9 @@ The most sophisticated, vowel-based, programming language ever conceived.
         - [Printing](#📤-printing)
         - [Conditionals](#❗-conditionals)
         - [Loops](#🔁-loops)
+        - [Lists](#📋-lists)
         - [Functions](#🧙‍♂️-functions)
+        - [Built-in functions](#🧝‍♂️-built-in-functions)
     - [Short Examples](#🧠-short-examples)
     - [Longer Examples](#🧠🧠-longer-examples)
     - [Run and Build](#🏃-run-and-build)
@@ -22,7 +24,7 @@ The most sophisticated, vowel-based, programming language ever conceived.
 
 ## 🚽 What Is This?
 
-Peepee peepoo Language is an interpreted language made entirely from the letter `p` and a few brave vowels. Everything — variables, values, keywords — follows the sacred `p + vowel + p + vowel...` pattern.
+Peepee poopoo Language is an interpreted language made entirely from the letter `p` and a few brave vowels. Everything — variables, values, keywords — follows the sacred `p + vowel + p + vowel...` pattern.
 
 
 # Quick Guide
@@ -30,15 +32,19 @@ Peepee peepoo Language is an interpreted language made entirely from the letter 
 ## 📝 Syntax Rules
 
 - Only **p** and vowels (`a, e, i, o, u`) are allowed.
-- **Variable names**: UPPERCASE, must follow peepee peepoo pattern.
+- **Variable names**: UPPERCASE, must follow peepee poopoo pattern.
 - **Commands**: lowercase, same pattern.
-- **Numbers**: Written in peepee peepoo binary.  
+- **Numbers**: Written in peepee poopoo binary.  
   - Example:  
     - `po` → `0`  
     - `pi` → `1`  
     - `pipo` → `10` → decimal `2`  
     - `pipopo` → `100` → decimal `4`
-
+- **Characters**: Written in (base 5) peepee poopoo style.
+    - Example:
+        - `a` → `papopupi`
+        - `b` → `papopupo`
+        - See `-encode` and `-decode` options in the [Run and Build](#🏃-run-and-build) section.
 
 ### 📦 Assigning Variables
 
@@ -100,6 +106,41 @@ pope
 
 Prints `0` to `3`.
 
+### 📋 Lists
+
+Define a list of values by listing the values between two `pepe` keywords. This example shows a list `[0, 1, 2]` being defined and stored into the variable `PA`.
+
+```
+PA pe pepe po pi pipo pepe
+```
+
+Use `pepepa` to append another value to the list.
+
+```
+PA pepepa pipi 
+```
+
+Use `pepepi` to read or write a value to the list. 
+
+```
+PAPI pe PA pepepi po
+PA pepepi po pe pi
+```
+
+Use `pepepo` to pop a value from a list. This removes the value at a given index and returns the removed value.
+
+```
+PAPI pe PA pepepo po
+```
+
+Use `pepepe` to get the length of a list.
+
+```
+PAPI pe pepepe PA
+```
+
+
+
 
 ### 🧙‍♂️ Functions
 
@@ -118,6 +159,18 @@ A function is called like this:
 pee PAPOPE pi pee
 ```
 This wil call the function `PAPOPE` with parameter `pi` which is equal to `1`.
+
+### 🧝‍♂️ Built-in Functions
+
+Some functions are already predefined. Note that user-defined functions and variables are always written in uppercase letters, whereas built-in functions use a mix of uppercase and lowercase letters.
+
+Built-in functions are not called in the same way as user-defined functions, because they are not wrapped between two `pee` keywords.
+
+| Function description  | Name      | Example usage |
+|-----------------------|-----------|------------------------------------|
+| Read from stdin       | `PIpi`    | `PI pe PIpi`                       |
+| Read from file        | `PIPIpi`  | `PI pe PIPIpi PA`                  |
+| Character to int      | `POpi`    | `PI pe POpi papipupi`              |
 
 
 ## 🧠 Short Examples
@@ -144,7 +197,10 @@ Outputs: `0149`
 
 ## 🧠🧠 Longer Examples
 
-[Fibonacci example](./examples/fibonacci.poopoo)
+1. [Hello world example](./examples/helloworld.peepoo)
+2. [Fibonacci example](./examples/fibonacci.peepoo)
+3. [Palindrome example](./examples/palindrome.peepoo)
+4. [Sorting example](./examples/sort.peepoo)
 
 ## 🏃 Run and Build
 
