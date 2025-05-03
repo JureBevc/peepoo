@@ -45,6 +45,7 @@ Peepee poopoo Language is an interpreted language made entirely from the letter 
         - `a` → `papopupi`
         - `b` → `papopupo`
         - See `-encode` and `-decode` options in the [Run and Build](#🏃-run-and-build) section.
+- **Syntax highlighting**: Available through a [VS Code extention](https://marketplace.visualstudio.com/items?itemName=JureBevc.peepoo-syntax).
 
 ### 📦 Assigning Variables
 
@@ -99,8 +100,8 @@ Prints `2` because `pipo` is 2.
 Use `pepo` to start a loop and `pope` to end it. The loop variable auto-increments from 0 to the upper bound (exclusive).
 
 ```
-pepo PEE po pipopo
-    paapa PEE
+pepo PI po pipopo
+    paapa PI
 pope
 ```
 
